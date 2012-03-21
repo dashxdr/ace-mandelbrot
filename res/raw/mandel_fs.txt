@@ -1,0 +1,27 @@
+//#pragma glsl
+//#extension GL_EXT_gpu_shader4 : enable
+precision mediump float;
+//precision highp float;
+varying vec2 tpos;
+varying vec4 gl_FragCoord;
+#define MAXIT 50
+uniform sampler2D cmap;
+void main()
+{
+	vec3 color;
+	float cReal = tpos.x;
+	float cImag = tpos.y;
+	float real = cReal;
+	float imag = cImag;
+
+	int iter;
+	float tempreal;
+	for(iter=0; iter<MAXIT && real*real + imag*imag < 4.0; ++iter)
+	{
+		tempreal = real;
+		real = (real * real) - (imag * imag) + cReal;
+		imag = 2.0 * tempreal * imag + cImag;
+	}
+ // Base the color on the number of iterations
+	gl_FragColor = texture2D(cmap, vec2((float(iter)+.5)/256.0, 0.125));
+}
